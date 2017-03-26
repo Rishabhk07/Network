@@ -9,17 +9,22 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.Buffer;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -48,13 +53,14 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public class DownloadData extends AsyncTask<String, Void , String>{
+    public class DownloadData extends AsyncTask<String, Void , ArrayList<model>>{
 
         @Override
-        protected String doInBackground(String... params) {
+        protected ArrayList<model> doInBackground(String... params) {
             URL url = null;
+            ArrayList<model> jsonArray = new ArrayList<>();
             try {
-                url = new URL(params[0]);
+                url = new URL("https://jsonplaceholder.typicode.com/posts");
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
@@ -80,8 +86,14 @@ public class MainActivity extends AppCompatActivity {
                     sb.append(buffer);
                 }
 
-                return sb.toString();
 
+                String json = sb.toString();
+
+                jsonArray = getJson(json);
+
+//                return sb.toString();
+
+                return jsonArray;
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -91,16 +103,47 @@ public class MainActivity extends AppCompatActivity {
 //            HttpURLConnection  httpURLConnection = (HttpURLConnection) urlConnection;
 
 
-            return "Web page not availabe";
+//            return "Web page not availabe";
+         return jsonArray;
         }
 
         @Override
-        protected void onPostExecute(String s) {
+        protected void onPostExecute(ArrayList<model> jsonArray) {
 
-            tvData.setText(s);
+            Log.d(TAG, "onPostExecute: " + jsonArray.get(1));
 
-            super.onPostExecute(s);
+            for (int i = 0 ;i < jsonArray.size() ; i++){
+                tvData.setText(String.valueOf(jsonArray.get(i).getTitle()));
+            }
+
+
+            // List View
+
+            super.onPostExecute(jsonArray);
         }
+    }
+
+    static ArrayList<model> getJson(String json){
+
+        //convert string to array list coming in JSON format
+
+        ArrayList<model> modelJson = new ArrayList<>();
+
+        try {
+            JSONArray jsonArray = new JSONArray(json);
+            for(int i = 0 ; i < jsonArray.length() ; i++){
+                JSONObject thisJsonObject = jsonArray.getJSONObject(i);
+                model model = new model(thisJsonObject.getInt("userId") , thisJsonObject.getInt("id") ,
+                        thisJsonObject.getString("title") , thisJsonObject.getString("body"));
+                modelJson.add(model);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.d(TAG, "getJson: " + String.valueOf(modelJson.get(1).getBody()));
+        return modelJson;
     }
 
 }
