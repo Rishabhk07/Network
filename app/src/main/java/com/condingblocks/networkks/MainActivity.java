@@ -5,8 +5,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -31,6 +33,10 @@ public class MainActivity extends AppCompatActivity {
     Button btnDOwnload;
     EditText etUrl;
     TextView tvData;
+    ListView lvJson;
+    ArrayList<model> adapterArray = new ArrayList<>();
+    Adapter adapter;
+
     public static final String TAG = "MainActivity";
 
     @Override
@@ -41,6 +47,11 @@ public class MainActivity extends AppCompatActivity {
         btnDOwnload = (Button) findViewById(R.id.btnDownload);
         etUrl = (EditText) findViewById(R.id.etUrl);
         tvData = (TextView) findViewById(R.id.tvData);
+        lvJson = (ListView) findViewById(R.id.lv);
+
+        adapter = new Adapter(adapterArray , this);
+
+        lvJson.setAdapter(adapter);
 
         btnDOwnload.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
         protected ArrayList<model> doInBackground(String... params) {
             URL url = null;
             ArrayList<model> jsonArray = new ArrayList<>();
+
+
             try {
                 url = new URL("https://jsonplaceholder.typicode.com/posts");
             } catch (MalformedURLException e) {
@@ -113,8 +126,10 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "onPostExecute: " + jsonArray.get(1));
 
             for (int i = 0 ;i < jsonArray.size() ; i++){
-                tvData.setText(String.valueOf(jsonArray.get(i).getTitle()));
+                adapterArray.add(jsonArray.get(i));
+                adapter.notifyDataSetChanged();
             }
+
 
 
             // List View
