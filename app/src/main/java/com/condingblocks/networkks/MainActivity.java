@@ -3,6 +3,7 @@ package com.condingblocks.networkks;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     Button btnDOwnload;
     EditText etUrl;
     TextView tvData;
+    public static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
             int responseCode = 0;
             try {
                 responseCode = httpURLConnection.getResponseCode();
+                Log.d(TAG, "doInBackground: ");
                 InputStream inputStream = httpURLConnection.getInputStream();
                 InputStreamReader ir = new InputStreamReader(inputStream);
                 BufferedReader reader = new BufferedReader(ir);
@@ -73,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
                 String buffer;
 
 
-                if( (buffer = reader.readLine()) != null){
+                while( (buffer = reader.readLine()) != null){
                     sb.append(buffer);
                 }
 
@@ -88,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
 //            HttpURLConnection  httpURLConnection = (HttpURLConnection) urlConnection;
 
 
-            return String.valueOf(responseCode);
+            return "Web page not availabe";
         }
 
         @Override
