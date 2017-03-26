@@ -10,11 +10,15 @@ import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.Buffer;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -61,9 +65,26 @@ public class MainActivity extends AppCompatActivity {
             int responseCode = 0;
             try {
                 responseCode = httpURLConnection.getResponseCode();
+                InputStream inputStream = httpURLConnection.getInputStream();
+                InputStreamReader ir = new InputStreamReader(inputStream);
+                BufferedReader reader = new BufferedReader(ir);
+
+                StringBuilder sb = new StringBuilder();
+                String buffer;
+
+
+                if( (buffer = reader.readLine()) != null){
+                    sb.append(buffer);
+                }
+
+                return sb.toString();
+
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+
 //            HttpURLConnection  httpURLConnection = (HttpURLConnection) urlConnection;
 
 
